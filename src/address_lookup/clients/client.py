@@ -2,7 +2,8 @@ from ..result import AddressLookupResult
 
 
 class AddressLookupClient:
-    """Base class for clients for the Address Lookup.
+    """
+    Base class for clients for the Address Lookup.
     If you're developing your own client, use this as the base class.
     """
 

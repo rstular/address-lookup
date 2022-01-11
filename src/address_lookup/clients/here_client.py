@@ -96,16 +96,29 @@ class AddressLookupHereClient(AddressLookupClient):
             "apiKey": self.api_key,
             "q": search_query,
         }
-        response = requests.get(self._url, params=params).json()["items"]
+        response = requests.get(self._url, params=params)
 
-        if len(response) == 0:
+        if response.status_code != 200:
+            response_json = response.json()
+            if "error" in response_json:
+                raise AddressLookupException(
+                    f'Error "{response["error"]}" ({response.status_code}) from HERE API: {response["error_description"]}'
+                )
+            else:
+                raise AddressLookupException(
+                    f"Error {response.status_code} from HERE API: {response.text}"
+                )
+
+        response_json_items = response.json()["items"]
+
+        if len(response_json_items) == 0:
             return AddressLookupResult(AddressLookupResultType.NOT_FOUND)
 
-        if len(response) > 1:
+        if len(response_json_items) > 1:
             logging.warn("More than 1 result found")
             if error_on_multiple:
                 raise AddressLookupException(
                     "Multiple results found, but not allowed to ignore"
                 )
 
-        return self.parse_response(response[0])
+        return self.parse_response(response_json_items[0])
