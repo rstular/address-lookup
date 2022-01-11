@@ -21,30 +21,18 @@ class AddressLookupHereClient(AddressLookupClient):
         """
         self.api_key = here_api_key
 
-    def lookup_address(self, search_query: str) -> AddressLookupResult:
-        """
-        Lookup the address using the HERE API.
+    def parse_response(self, response: dict) -> AddressLookupResult:
+        """Parse response returned by the HERE API into a result object.
 
         Args:
-            search_query (str): The address to lookup.
+            response (dict): Response from the HERE API
+
+        Raises:
+            AddressLookupException: The error that occurred during the lookup.
 
         Returns:
             AddressLookupResult: The result of the address lookup.
         """
-
-        params = {
-            "apiKey": self.api_key,
-            "q": search_query,
-        }
-        response = requests.get(self._url, params=params).json()["items"]
-
-        if len(response) == 0:
-            return AddressLookupResult(AddressLookupResultType.NOT_FOUND)
-
-        if len(response) > 1:
-            logging.warn("More than 1 result found")
-
-        response = response[0]
 
         try:
             result_type = AddressLookupResultType(response["resultType"])
@@ -87,3 +75,37 @@ class AddressLookupHereClient(AddressLookupClient):
                 result.house_number = response["address"]["houseNumber"]
 
         return result
+
+    def lookup_address(
+        self, search_query: str, error_on_multiple: bool = False
+    ) -> AddressLookupResult:
+        """Lookup the address using the HERE API.
+
+        Args:
+            search_query (str): The address to lookup
+            error_on_multiple (bool, optional): Whether to raise an exception if multiple results are found. Defaults to False.
+
+        Raises:
+            AddressLookupException: The error that occurred during the lookup.
+
+        Returns:
+            AddressLookupResult: The result of the address lookup.
+        """
+
+        params = {
+            "apiKey": self.api_key,
+            "q": search_query,
+        }
+        response = requests.get(self._url, params=params).json()["items"]
+
+        if len(response) == 0:
+            return AddressLookupResult(AddressLookupResultType.NOT_FOUND)
+
+        if len(response) > 1:
+            logging.warn("More than 1 result found")
+            if error_on_multiple:
+                raise AddressLookupException(
+                    "Multiple results found, but not allowed to ignore"
+                )
+
+        return self.parse_response(response[0])

@@ -16,6 +16,10 @@ class AddressLookupResultType(Enum):
 
 
 class AddressLookupResult(object):
+    """
+    Result of the online address lookup
+    """
+
     result_type: AddressLookupResultType
     confidence: float = 0.0
     label: str = None
@@ -44,6 +48,22 @@ class AddressLookupResult(object):
         house_number: str = None,
         type_info: str = None,
     ):
+        """Initialize the result
+
+        Args:
+            result_type (AddressLookupResultType): Type of the result
+            confidence (float, optional): Confidence of the result. Defaults to None.
+            label (str, optional): Label of the result. Defaults to None.
+            country_code (str, optional): ISO 3166-1 Alpha-3 country code of the result. Defaults to None.
+            country (str, optional): Country of the result. Defaults to None.
+            county (str, optional): County of the result. Defaults to None.
+            city (str, optional): City of the result. Defaults to None.
+            district (str, optional): District of the result. Defaults to None.
+            street (str, optional): Street of the result. Defaults to None.
+            postal_code (str, optional): Postal code of the result. Defaults to None.
+            house_number (str, optional): House number of the result. Defaults to None.
+            type_info (str, optional): Additional information regarding the result type. Defaults to None.
+        """
         self.result_type = result_type
         self.confidence = confidence
         self.label = label
