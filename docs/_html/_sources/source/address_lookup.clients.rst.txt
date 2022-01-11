@@ -1,0 +1,29 @@
+address\_lookup.clients package
+===============================
+
+Submodules
+----------
+
+address\_lookup.clients.client module
+-------------------------------------
+
+.. automodule:: address_lookup.clients.client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+address\_lookup.clients.here\_client module
+-------------------------------------------
+
+.. automodule:: address_lookup.clients.here_client
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: address_lookup.clients
+   :members:
+   :undoc-members:
+   :show-inheritance:
