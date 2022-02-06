@@ -1,4 +1,5 @@
 import logging
+import statistics
 
 import requests
 
@@ -102,7 +103,7 @@ class AddressLookupHereClient(AddressLookupClient):
             response_json = response.json()
             if "error" in response_json:
                 raise AddressLookupException(
-                    f'Error "{response_json["error"]}" ({response.status_code}) from HERE API: {response_json["error_description"]}'
+                    f'Error "{response["error"]}" ({response.status_code}) from HERE API: {response["error_description"]}'
                 )
             else:
                 raise AddressLookupException(
@@ -114,11 +115,24 @@ class AddressLookupHereClient(AddressLookupClient):
         if len(response_json_items) == 0:
             return AddressLookupResult(AddressLookupResultType.NOT_FOUND)
 
+        best_index = 0
         if len(response_json_items) > 1:
             logging.warn("More than 1 result found")
             if error_on_multiple:
                 raise AddressLookupException(
                     "Multiple results found, but not allowed to ignore"
                 )
-
-        return self.parse_response(response_json_items[0])
+            if "fieldScore" in response_json_items[0]["scoring"]:
+                max_score = 0
+                for i in range(len(response_json_items)):
+                    print(response_json_items[i])
+                    current_score = []
+                    for field, score in response_json_items[i]["scoring"]["fieldScore"].items():
+                        if type(score) == list:
+                            current_score.append(statistics.mean(score))
+                        else:
+                            current_score.append(score)
+                    if statistics.mean(current_score) > max_score:
+                        best_index = i
+                        max_score = statistics.mean(current_score)
+        return self.parse_response(response_json_items[best_index])
