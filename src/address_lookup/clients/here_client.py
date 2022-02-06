@@ -125,7 +125,6 @@ class AddressLookupHereClient(AddressLookupClient):
             if "fieldScore" in response_json_items[0]["scoring"]:
                 max_score = 0
                 for i in range(len(response_json_items)):
-                    print(response_json_items[i])
                     current_score = []
                     for field, score in response_json_items[i]["scoring"]["fieldScore"].items():
                         if type(score) == list:
