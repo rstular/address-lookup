@@ -103,7 +103,7 @@ class AddressLookupHereClient(AddressLookupClient):
             response_json = response.json()
             if "error" in response_json:
                 raise AddressLookupException(
-                    f'Error "{response["error"]}" ({response.status_code}) from HERE API: {response["error_description"]}'
+                    f'Error "{response_json["error"]}" ({response.status_code}) from HERE API: {response_json["error_description"]}'
                 )
             else:
                 raise AddressLookupException(
